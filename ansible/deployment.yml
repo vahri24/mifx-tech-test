@@ -1,0 +1,27 @@
+---
+- name: Deploy app with Docker Compose (force update)
+  hosts: app
+  become: true
+  vars:
+    project_dir: /home/fahrizal/Documents/compose-template            # folder di server target tempat docker-compose.yml berada
+    compose_file: docker-compose.yml  # nama compose file
+  tasks:
+    - name: Ensure project directory exists
+      ansible.builtin.file:
+        path: "{{ project_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Pulling new code from repository
+      ansible.builtin.command:
+        cmd: git pull
+        chdir: "{{ project_dir }}"
+
+    - name: Force recreate containers (force update)
+      ansible.builtin.command:
+        cmd: docker compose -f {{ compose_file }} up -d --force-recreate --remove-orphans
+        chdir: "{{ project_dir }}"
+
+    - name: Prune dangling images (optional cleanup)
+      ansible.builtin.command:
+        cmd: docker image prune -f
