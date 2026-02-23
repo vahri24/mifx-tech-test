@@ -1,0 +1,16 @@
+version: "3"
+
+services:
+  mifx:
+    container_name: mifx
+    image: vahri24/kontelers:mifx-nginx-1.0
+    ports:
+      - 8080:80
+    networks:
+      - dockernet
+    restart: unless-stopped
+
+networks:
+  dockernet:
+    external:
+      name: dockernet
